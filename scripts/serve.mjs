@@ -1,6 +1,7 @@
 /**
  * Tiny static file server for dist/ (used by verify.mjs and lighthouse.mjs).
  * Behaves like a typical static host: /path/ → /path/index.html, unknown → 404.html.
+ * Honours BASE_PATH (e.g. /websitetest/) like GitHub Pages project sites.
  *
  *   node scripts/serve.mjs [port]
  */
@@ -10,6 +11,7 @@ import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dist = fileURLToPath(new URL('../dist', import.meta.url));
+const base = (process.env.BASE_PATH || '/').replace(/\/?$/, '/');
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -25,6 +27,8 @@ const types = {
 };
 
 async function resolve(urlPath) {
+  if (!urlPath.startsWith(base)) return null;
+  urlPath = `/${urlPath.slice(base.length)}`;
   const clean = normalize(decodeURIComponent(urlPath.split('?')[0])).replace(/^(\.\.[/\\])+/, '');
   let file = join(dist, clean);
   try {

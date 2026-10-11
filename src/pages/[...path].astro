@@ -11,12 +11,12 @@ import Home from '../views/Home.astro';
 import Imprint from '../views/Imprint.astro';
 import Privacy from '../views/Privacy.astro';
 import Services from '../views/Services.astro';
-import { locales, pageKeys, pathFor, t, type Locale, type PageKey } from '../i18n';
+import { locales, pageKeys, routes, t, type Locale, type PageKey } from '../i18n';
 
 export const getStaticPaths = (() =>
   locales.flatMap((lang) =>
     pageKeys.map((page) => ({
-      params: { path: pathFor(page, lang).replace(/^\/|\/$/g, '') || undefined },
+      params: { path: routes[page][lang].replace(/^\/|\/$/g, '') || undefined },
       props: { lang, page },
     })),
   )) satisfies GetStaticPaths;

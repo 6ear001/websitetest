@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { withBase } from '../i18n/config';
 
 /** Logo files in public/brand/ (originals, never edited). */
 export const logos = {
@@ -14,6 +15,9 @@ export const logos = {
  * Reads width/height from an SVG's viewBox at build time, so <img> gets the
  * correct aspect ratio (no layout shift) whatever logo file is dropped in.
  */
+/** URL of a logo for <img src>, including the base path. */
+export const logoSrc = (publicPath: string): string => withBase(publicPath);
+
 export function svgSize(publicPath: string): { width: number; height: number } {
   try {
     const svg = readFileSync(join(process.cwd(), 'public', publicPath), 'utf8');

@@ -17,7 +17,9 @@ import { startStaticServer } from './serve.mjs';
 const run = promisify(execFile);
 const root = fileURLToPath(new URL('..', import.meta.url));
 const PORT = Number(process.env.PORT || 4330);
-const BASE = `http://127.0.0.1:${PORT}`;
+const ORIGIN = `http://127.0.0.1:${PORT}`;
+// Build and check with the same BASE_PATH (e.g. /websitetest/ for GitHub Pages).
+const BASE = `${ORIGIN}${(process.env.BASE_PATH || '/').replace(/\/$/, '')}`;
 const MIN = Number(process.env.MIN_SCORE || 95);
 const OUT = `${root}reports/lighthouse`;
 const ONLY = process.env.PAGES?.split(',');

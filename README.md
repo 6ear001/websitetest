@@ -101,8 +101,14 @@ SITE_URL=https://www.your-domain.de npm run build
 
 - **Classic hosting (Apache, e.g. IONOS, Strato, all-inkl):** upload `dist/` via (S)FTP into the web root. `dist/.htaccess` sets the 404 page,
   compression, caching and security headers; the HTTPS redirect is in there commented out.
-- **Netlify / Cloudflare Pages / Vercel / GitHub Pages:** build command `npm run build`, output directory `dist`, environment variable `SITE_URL`.
+- **GitHub Pages** (already set up): `.github/workflows/deploy.yml` builds and publishes on every push to
+  `claude/gallant-cerf-st2pf7` or `main`. One-time setup: *Settings → Pages → Source: **GitHub Actions***.
+  The site is then at `https://6ear001.github.io/websitetest/`. Domain and sub-folder come in automatically (`SITE_URL`, `BASE_PATH`).
+  The preview is built with `NOINDEX=1` (robots `noindex`, `Disallow: /`). Remove that line from the workflow at launch.
+- **Netlify / Cloudflare Pages / Vercel:** build command `npm run build`, output directory `dist`, environment variable `SITE_URL`.
   `404.html` is picked up automatically.
+- **Sub-folder:** if the site lives in a sub-folder, build with `BASE_PATH=/folder/` (and run checks with the same variable:
+  `BASE_PATH=/folder/ npm run verify`).
 - Hosting in the EU and an AV-Vertrag (data processing agreement) with the host are recommended (see the privacy policy TODO).
 
 ## Quality checks

@@ -18,7 +18,9 @@ import { startStaticServer } from './serve.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const PORT = Number(process.env.PORT || 4329);
-const BASE = `http://127.0.0.1:${PORT}`;
+const ORIGIN = `http://127.0.0.1:${PORT}`;
+// Build and check with the same BASE_PATH (e.g. /websitetest/ for GitHub Pages).
+const BASE = `${ORIGIN}${(process.env.BASE_PATH || '/').replace(/\/$/, '')}`;
 const WIDTHS = [375, 768, 1440];
 const SHOTS = `${root}reports/screenshots`;
 
@@ -135,7 +137,7 @@ try {
   for (const [href, from] of links) {
     if (/^(mailto|tel):/.test(href)) continue;
     const url = new URL(href, `${BASE}${from}`);
-    if (url.origin !== BASE) {
+    if (url.origin !== ORIGIN) {
       external.add(url.href);
       continue;
     }

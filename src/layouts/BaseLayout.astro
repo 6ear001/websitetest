@@ -3,7 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { company } from '../config/site';
-import { localeMeta, locales, pathFor, t, type Locale, type PageKey } from '../i18n';
+import { localeMeta, locales, pathFor, t, withBase, type Locale, type PageKey } from '../i18n';
 import { absolute, alternates } from '../lib/urls';
 
 interface Props {
@@ -22,7 +22,9 @@ const site = Astro.site;
 
 const canonical = page ? absolute(pathFor(page, lang), site) : undefined;
 const alts = page ? alternates(page, site) : [];
-const ogImage = absolute('/og-image.png', site);
+const ogImage = absolute(withBase('/og-image.png'), site);
+// Set NOINDEX=1 at build time for preview deployments (e.g. GitHub Pages before launch).
+const noindexAll = Boolean(process.env.NOINDEX);
 
 // JSON-LD: deliberately only name, address, phone and e-mail (no unverified data).
 const jsonLd = {
@@ -40,8 +42,9 @@ const jsonLd = {
   email: company.email,
 };
 
-const fontPreload =
-  lang === 'ar' ? '/fonts/noto-kufi-arabic-var.woff2' : '/fonts/montserrat-latin-var.woff2';
+const fontPreload = withBase(
+  lang === 'ar' ? '/fonts/noto-kufi-arabic-var.woff2' : '/fonts/montserrat-latin-var.woff2',
+);
 ---
 
 <!doctype html>
@@ -51,16 +54,16 @@ const fontPreload =
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex" />}
+    {(noindex || noindexAll) && <meta name="robots" content="noindex" />}
     {canonical && <link rel="canonical" href={canonical} />}
     {alts.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
 
     <link rel="preload" href={fontPreload} as="font" type="font/woff2" crossorigin />
 
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href={withBase('/favicon.ico')} sizes="32x32" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
+    <link rel="manifest" href={withBase('/site.webmanifest')} />
     <meta name="theme-color" content="#000000" />
     <meta name="format-detection" content="telephone=no" />
 

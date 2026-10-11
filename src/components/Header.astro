@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import LanguageSwitcher from './LanguageSwitcher.astro';
 import { pathFor, t, type Locale, type PageKey } from '../i18n';
-import { logos, svgSize } from '../lib/brand';
+import { logoSrc, logos, svgSize } from '../lib/brand';
 
 interface Props {
   lang: Locale;
@@ -26,7 +26,7 @@ const quoteHref = `${pathFor('contact', lang)}#anfrage`;
   <div class="container-site flex h-16 items-center justify-between gap-4 lg:h-20">
     <a href={pathFor('home', lang)} class="flex-none">
       <img
-        src={logos.horizontalOnDark}
+        src={logoSrc(logos.horizontalOnDark)}
         width={logoSize.width}
         height={logoSize.height}
         alt={d.ui.homeLinkLabel}

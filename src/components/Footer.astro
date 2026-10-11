@@ -2,7 +2,7 @@
 import Icon from './Icon.astro';
 import { company, mapUrl } from '../config/site';
 import { pathFor, t, type Locale } from '../i18n';
-import { logos, svgSize } from '../lib/brand';
+import { logoSrc, logos, svgSize } from '../lib/brand';
 
 interface Props {
   lang: Locale;
@@ -48,7 +48,7 @@ const linkClass =
     <div class="lg:col-span-5">
       <a href={pathFor('home', lang)} class="inline-block">
         <img
-          src={logos.horizontalOnDark}
+          src={logoSrc(logos.horizontalOnDark)}
           width={logoSize.width}
           height={logoSize.height}
           alt={d.ui.homeLinkLabel}

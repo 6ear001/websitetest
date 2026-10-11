@@ -33,7 +33,11 @@ export const routes: Record<PageKey, Record<Locale, string>> = {
   privacy: { de: '/datenschutz/', ar: '/ar/privacy/' },
 };
 
-export const pathFor = (page: PageKey, lang: Locale): string => routes[page][lang];
+/** Prefixes a root-relative path with the configured base (BASE_PATH), e.g. "/websitetest/". */
+export const withBase = (path: string): string => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${path}`;
+
+/** Link to a page in a language (includes the base path). */
+export const pathFor = (page: PageKey, lang: Locale): string => withBase(routes[page][lang]);
 
 export const isLocale = (value: string): value is Locale =>
   (locales as readonly string[]).includes(value);
