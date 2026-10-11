@@ -1,0 +1,20 @@
+---
+import BrandText from './BrandText.astro';
+
+/** Renders `text`, with the `highlight` part in brand red. */
+interface Props {
+  text: string;
+  highlight?: string | undefined;
+}
+const { text, highlight } = Astro.props;
+const i = highlight ? text.lastIndexOf(highlight) : -1;
+const parts = highlight && i >= 0 ? [text.slice(0, i), highlight, text.slice(i + highlight.length)] : [text, '', ''];
+---
+
+<BrandText text={parts[0]!} />{
+  parts[1] && (
+    <span class="text-brand">
+      <BrandText text={parts[1]} />
+    </span>
+  )
+}<BrandText text={parts[2]!} />

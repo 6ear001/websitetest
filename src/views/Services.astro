@@ -1,0 +1,113 @@
+---
+import CrateDecor from '../components/CrateDecor.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import ServiceArt from '../components/ServiceArt.astro';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const s = d.services;
+
+const blocks = [
+  { id: 'lagerung', icon: 'storage' as const, data: s.storage, bg: 'bg-white', flip: false },
+  { id: 'versand', icon: 'shipping' as const, data: s.shipping, bg: 'bg-neutral-100', flip: true },
+];
+---
+
+<PageHero hero={s.hero}>
+  <nav class="mt-9 flex flex-wrap items-center gap-3" aria-label={s.jumpLabel}>
+    <span class="text-sm font-semibold text-neutral-400" aria-hidden="true">{s.jumpLabel}</span>
+    {
+      blocks.map((b) => (
+        <a href={`#${b.id}`} class="btn btn-outline-light min-h-11 py-2">
+          <Icon name={b.icon} size={20} />
+          {b.data.title}
+        </a>
+      ))
+    }
+  </nav>
+</PageHero>
+
+{
+  blocks.map((b) => (
+    <section id={b.id} class:list={[b.bg, 'py-20 lg:py-28']} aria-labelledby={`${b.id}-title`}>
+      <div class="container-site grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+        <div class:list={[b.flip && 'lg:order-2']}>
+          <span class="crate-icon">
+            <Icon name={b.icon} size={28} />
+          </span>
+          <h2 id={`${b.id}-title`} class="h-section mt-6">
+            {b.data.title}
+          </h2>
+          <p class="lead mt-5 text-neutral-700">{b.data.lead}</p>
+          <h3 class="mt-9 text-lg">{b.data.listTitle}</h3>
+          <ul class="mt-4 grid gap-3">
+            {b.data.list.map((item) => (
+              <li class="flex items-start gap-3">
+                <span class="mt-0.5 grid h-6 w-6 flex-none place-items-center rounded-md bg-ink text-brand">
+                  <Icon name="check" size={16} />
+                </span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-8 border-s-4 border-brand ps-4 text-neutral-700">{b.data.note}</p>
+        </div>
+        <div class:list={['reveal relative', b.flip && 'lg:order-1']}>
+          <div class="relative overflow-hidden rounded-[12px] bg-ink p-6 sm:p-10">
+            <div class="bg-dots absolute inset-0" aria-hidden="true" />
+            <ServiceArt kind={b.id === 'lagerung' ? 'storage' : 'shipping'} class="relative w-full" />
+          </div>
+        </div>
+      </div>
+    </section>
+  ))
+}
+
+<!-- Combined -->
+<section class="relative overflow-hidden bg-ink py-20 text-white lg:py-24" aria-labelledby="combined-title">
+  <div class="bg-dots absolute inset-0" aria-hidden="true"></div>
+  <div class="container-site relative grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+    <div class="max-w-2xl">
+      <p class="flex items-center gap-3 text-brand" aria-hidden="true">
+        <Icon name="storage" size={32} />
+        <Icon name="plus" size={24} class="text-white" />
+        <Icon name="shipping" size={32} />
+      </p>
+      <h2 id="combined-title" class="h-section mt-6">{s.combined.title}</h2>
+      <p class="lead mt-5 text-neutral-300">{s.combined.text}</p>
+    </div>
+    <CrateDecor class="hidden w-72 lg:block" />
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="bg-white py-20 lg:py-28" aria-labelledby="faq-title">
+  <div class="container-site grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-16">
+    <div>
+      <h2 id="faq-title" class="h-section">{s.faq.title}</h2>
+    </div>
+    <div class="faq divide-y-2 divide-neutral-200 border-y-2 border-neutral-200">
+      {
+        s.faq.items.map((item) => (
+          <details class="group">
+            <summary class="flex items-center justify-between gap-6 py-5 text-lg font-bold">
+              <span>{item.question}</span>
+              <span class="faq-icon grid h-9 w-9 flex-none place-items-center rounded-[10px] bg-ink text-white">
+                <Icon name="plus" size={20} />
+              </span>
+            </summary>
+            <div class="rich pb-6 pe-12 text-neutral-700" set:html={item.answer} />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<CtaBand cta={s.cta} lang={lang} />

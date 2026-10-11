@@ -1,0 +1,48 @@
+---
+/**
+ * Single 404 page for all languages (static hosts serve one 404.html):
+ * German first, Arabic below with its own lang/dir.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import { pathFor, t } from '../i18n';
+
+const de = t('de');
+const ar = t('ar');
+const blocks = [
+  { d: de, lang: 'de' as const, dir: 'ltr' },
+  { d: ar, lang: 'ar' as const, dir: 'rtl' },
+];
+---
+
+<BaseLayout lang="de" title={de.notFound.meta.title} description={de.notFound.meta.description} noindex>
+  <section class="relative overflow-hidden bg-ink text-white">
+    <div class="bg-dots absolute inset-0" aria-hidden="true"></div>
+    <div class="container-site relative py-16 sm:py-24">
+      <p class="text-[clamp(5rem,20vw,11rem)] font-extrabold leading-none text-brand" aria-hidden="true">404</p>
+      <div class="mt-10 grid gap-12 md:grid-cols-2">
+        {
+          blocks.map(({ d, lang, dir }) => (
+            <div lang={lang} dir={dir}>
+              {lang === 'de' ? (
+                <h1 class="h-section">{d.notFound.title}</h1>
+              ) : (
+                <h2 class="h-section">{d.notFound.title}</h2>
+              )}
+              <p class="lead mt-4 max-w-md text-neutral-300">{d.notFound.text}</p>
+              <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <a href={pathFor('home', lang)} class="btn btn-primary">
+                  {d.notFound.home}
+                  <Icon name="arrow" size={20} />
+                </a>
+                <a href={pathFor('contact', lang)} class="btn btn-outline-light">
+                  {d.notFound.contact}
+                </a>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

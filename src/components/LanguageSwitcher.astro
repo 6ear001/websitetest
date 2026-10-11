@@ -1,0 +1,38 @@
+---
+import { localeMeta, locales, pathFor, t, type Locale, type PageKey } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  page?: PageKey;
+  class?: string;
+}
+
+const { lang, page, class: className } = Astro.props;
+const d = t(lang);
+---
+
+<nav aria-label={d.ui.languageLabel} class={className}>
+  <ul class="flex items-center gap-1 rounded-[10px] border border-neutral-700 p-1">
+    {
+      locales.map((l) => {
+        const current = l === lang;
+        return (
+          <li>
+            <a
+              href={pathFor(page ?? 'home', l)}
+              hreflang={localeMeta[l].hreflang}
+              lang={l}
+              aria-current={current ? 'true' : undefined}
+              class:list={[
+                'block rounded-md px-3 py-1.5 text-sm font-bold no-underline transition-colors',
+                current ? 'bg-white text-ink' : 'text-white hover:bg-neutral-800',
+              ]}
+            >
+              {localeMeta[l].label}
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>

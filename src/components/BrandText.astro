@@ -1,0 +1,9 @@
+---
+/** Prints text and keeps "D-Group" from breaking at its hyphen. */
+interface Props {
+  text: string;
+}
+const parts = Astro.props.text.split(/(D-Group)/);
+---
+
+{parts.map((part, i) => (i % 2 ? <span class="whitespace-nowrap">{part}</span> : part))}

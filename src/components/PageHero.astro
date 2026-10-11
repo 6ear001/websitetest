@@ -1,0 +1,21 @@
+---
+import CrateDecor from './CrateDecor.astro';
+import Highlight from './Highlight.astro';
+import type { Hero } from '../i18n';
+
+interface Props {
+  hero: Hero;
+}
+const { hero } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-ink text-white">
+  <div class="bg-dots absolute inset-0" aria-hidden="true"></div>
+  <CrateDecor class="pointer-events-none absolute -bottom-10 end-8 hidden w-96 opacity-80 xl:block" />
+  <div class="container-site relative py-14 sm:py-20 lg:py-24">
+    <p class="eyebrow text-brand">{hero.eyebrow}</p>
+    <h1 class="h-page mt-5 max-w-3xl"><Highlight text={hero.title} highlight={hero.highlight} /></h1>
+    <p class="lead mt-6 max-w-2xl text-neutral-300">{hero.lead}</p>
+    <slot />
+  </div>
+</section>

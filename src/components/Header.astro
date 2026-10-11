@@ -1,0 +1,136 @@
+---
+import Icon from './Icon.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { pathFor, t, type Locale, type PageKey } from '../i18n';
+import { logos, svgSize } from '../lib/brand';
+
+interface Props {
+  lang: Locale;
+  page?: PageKey;
+}
+
+const { lang, page } = Astro.props;
+const d = t(lang);
+const logoSize = svgSize(logos.horizontalOnDark);
+
+const nav = (['services', 'about', 'contact'] as const).map((key) => ({
+  key,
+  href: pathFor(key, lang),
+  label: d.ui.nav[key],
+  current: page === key,
+}));
+const quoteHref = `${pathFor('contact', lang)}#anfrage`;
+---
+
+<header class="sticky top-0 z-50 border-b border-neutral-800 bg-ink text-white">
+  <div class="container-site flex h-16 items-center justify-between gap-4 lg:h-20">
+    <a href={pathFor('home', lang)} class="flex-none">
+      <img
+        src={logos.horizontalOnDark}
+        width={logoSize.width}
+        height={logoSize.height}
+        alt={d.ui.homeLinkLabel}
+        class="h-9 w-auto lg:h-11"
+        fetchpriority="high"
+      />
+    </a>
+
+    <!-- Desktop -->
+    <nav aria-label={d.ui.mainNavLabel} class="hidden lg:block">
+      <ul class="flex items-center gap-2">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={item.current ? 'page' : undefined}
+                class:list={[
+                  'relative block px-3 py-2 font-semibold no-underline transition-colors hover:text-brand',
+                  'after:absolute after:inset-x-3 after:-bottom-0.5 after:h-[3px] after:rounded-full after:bg-brand after:transition-transform',
+                  item.current ? 'after:scale-x-100' : 'after:scale-x-0 hover:after:scale-x-100',
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="hidden items-center gap-4 lg:flex">
+      <LanguageSwitcher lang={lang} page={page} />
+      <a href={quoteHref} class="btn btn-primary min-h-11 px-4 py-2">
+        {d.ui.ctaQuote}
+        <Icon name="arrow" size={20} />
+      </a>
+    </div>
+
+    <!-- Mobile: <details> works without JavaScript; the script below only adds comfort -->
+    <details class="menu lg:hidden" data-menu>
+      <summary
+        class="grid h-11 w-11 cursor-pointer place-items-center rounded-[10px] border border-neutral-700 transition-colors hover:border-white"
+      >
+        <span class="when-closed"><Icon name="menu" /><span class="sr-only">{d.ui.menuOpen}</span></span>
+        <span class="when-open"><Icon name="close" /><span class="sr-only">{d.ui.menuClose}</span></span>
+      </summary>
+      <div
+        class="absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-neutral-800 bg-ink shadow-2xl"
+      >
+        <div class="container-site flex flex-col gap-6 py-6">
+          <nav aria-label={d.ui.mainNavLabel}>
+            <ul class="flex flex-col">
+              {
+                [{ key: 'home', href: pathFor('home', lang), label: d.ui.nav.home, current: page === 'home' }, ...nav].map(
+                  (item) => (
+                    <li class="border-b border-neutral-800">
+                      <a
+                        href={item.href}
+                        aria-current={item.current ? 'page' : undefined}
+                        class:list={[
+                          'flex items-center justify-between py-4 text-xl font-bold no-underline',
+                          item.current ? 'text-brand' : 'text-white',
+                        ]}
+                      >
+                        {item.label}
+                        <Icon name="arrow" size={20} class="text-neutral-500 rtl:-scale-x-100" />
+                      </a>
+                    </li>
+                  ),
+                )
+              }
+            </ul>
+          </nav>
+          <LanguageSwitcher lang={lang} page={page} class="self-start" />
+          <a href={quoteHref} class="btn btn-primary w-full">
+            {d.ui.ctaQuote}
+            <Icon name="arrow" size={20} />
+          </a>
+        </div>
+      </div>
+    </details>
+  </div>
+</header>
+
+<script>
+  // Progressive enhancement for the mobile menu: close on Escape, outside click,
+  // link click and when the viewport grows to desktop width.
+  const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
+  if (menu) {
+    const summary = menu.querySelector('summary');
+    const close = (focus = false) => {
+      if (!menu.open) return;
+      menu.open = false;
+      if (focus) summary?.focus();
+    };
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close(true);
+    });
+    document.addEventListener('click', (e) => {
+      if (menu.open && !menu.contains(e.target as Node)) close();
+    });
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => close()));
+    matchMedia('(min-width: 1024px)').addEventListener('change', (e) => {
+      if (e.matches) close();
+    });
+  }
+</script>

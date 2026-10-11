@@ -1,0 +1,336 @@
+---
+/**
+ * Quote request form.
+ * - Without a configured endpoint: mailto fallback (opens the visitor's e-mail program).
+ * - With PUBLIC_FORM_ENDPOINT / site.formEndpoint: POST (FormData) via fetch, plain POST without JS.
+ * Client-side validation, honeypot field, GDPR consent checkbox.
+ */
+import Icon from './Icon.astro';
+import { company, site } from '../config/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const c = d.contact;
+const f = c.fields;
+
+const endpoint = (import.meta.env.PUBLIC_FORM_ENDPOINT as string | undefined) || site.formEndpoint;
+const action = endpoint || `mailto:${company.email}`;
+
+const textFields = [
+  { id: 'name', label: f.name, type: 'text', autocomplete: 'name', required: true },
+  { id: 'company', label: f.company, type: 'text', autocomplete: 'organization', required: false },
+  { id: 'email', label: f.email, type: 'email', autocomplete: 'email', required: true },
+  { id: 'phone', label: f.phone, type: 'tel', autocomplete: 'tel', required: false },
+] as const;
+const detailFields = [
+  { id: 'goods', label: f.goods, hint: f.goodsHint },
+  { id: 'quantity', label: f.quantity, hint: f.quantityHint },
+  { id: 'timeframe', label: f.timeframe, hint: f.timeframeHint },
+] as const;
+---
+
+<form
+  id="quote-form"
+  class="quote-form"
+  action={action}
+  method="post"
+  enctype={endpoint ? 'multipart/form-data' : 'text/plain'}
+  data-endpoint={endpoint}
+  data-email={company.email}
+  data-subject={c.mailSubject}
+  data-msg-required={c.errors.required}
+  data-msg-email={c.errors.email}
+  data-msg-consent={c.errors.consent}
+  data-msg-topic={c.errors.topic}
+  data-msg-sending={c.sending}
+  aria-describedby="form-intro"
+>
+  <p id="form-intro" class="text-neutral-700">{c.formIntro}</p>
+
+  <div id="form-errors" class="todo mt-6 hidden border-solid font-semibold" role="alert" tabindex="-1">
+    {c.errors.summary}
+  </div>
+
+  <div class="mt-8 grid gap-6 sm:grid-cols-2">
+    {
+      textFields.map((field) => (
+        <div>
+          <label for={`f-${field.id}`} class="field-label">
+            {field.label}
+            {field.required ? (
+              <span aria-hidden="true" class="text-brand">
+                {' '}*
+              </span>
+            ) : (
+              <span class="font-normal text-neutral-600"> {c.optional}</span>
+            )}
+          </label>
+          <input
+            id={`f-${field.id}`}
+            name={field.id}
+            type={field.type}
+            autocomplete={field.autocomplete}
+            required={field.required}
+            data-label={field.label}
+            dir={field.type === 'email' || field.type === 'tel' ? 'ltr' : undefined}
+            class:list={['field-input', lang === 'ar' && (field.type === 'email' || field.type === 'tel') && 'text-end']}
+          />
+          <p id={`f-${field.id}-error`} class="field-error" hidden />
+        </div>
+      ))
+    }
+  </div>
+
+  <fieldset class="mt-8" aria-describedby="f-topic-error">
+    <legend class="field-label">
+      {f.topic}<span aria-hidden="true" class="text-brand"> *</span>
+    </legend>
+    <div class="mt-1 grid gap-3 sm:grid-cols-2">
+      {
+        f.topicOptions.map((opt, i) => (
+          <label class="choice">
+            <input
+              type="radio"
+              name="topic"
+              value={opt.value}
+              required={i === 0}
+              data-label={f.topic}
+              data-text={opt.label}
+            />
+            <span>{opt.label}</span>
+          </label>
+        ))
+      }
+    </div>
+    <p id="f-topic-error" class="field-error" hidden></p>
+  </fieldset>
+
+  <div class="mt-8 grid gap-x-6 sm:grid-cols-3">
+    {
+      detailFields.map((field) => (
+        <div class="row-span-3 grid grid-rows-subgrid content-start pb-6 sm:pb-0">
+          <label for={`f-${field.id}`} class="field-label self-end">
+            {field.label}
+            <span class="font-normal text-neutral-600"> {c.optional}</span>
+          </label>
+          <input
+            id={`f-${field.id}`}
+            name={field.id}
+            type="text"
+            data-label={field.label}
+            aria-describedby={`f-${field.id}-hint`}
+            class="field-input"
+          />
+          <span id={`f-${field.id}-hint`} class="field-hint">
+            {field.hint}
+          </span>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="mt-2 sm:mt-8">
+    <label for="f-message" class="field-label">
+      {f.message}<span aria-hidden="true" class="text-brand"> *</span>
+    </label>
+    <textarea
+      id="f-message"
+      name="message"
+      rows="6"
+      required
+      data-label={f.message}
+      aria-describedby="f-message-hint"
+      class="field-input"></textarea>
+    <span id="f-message-hint" class="field-hint">{f.messageHint}</span>
+    <p id="f-message-error" class="field-error" hidden></p>
+  </div>
+
+  <!-- Honeypot: invisible for people, bots tend to fill it in -->
+  <div class="hp" aria-hidden="true">
+    <label for="f-website">{f.honeypot}</label>
+    <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="mt-8">
+    <label class="consent flex items-start gap-3">
+      <input id="f-consent" type="checkbox" name="consent" value="yes" required class="mt-1" />
+      <span class="rich" set:html={f.consent} />
+    </label>
+    <p id="f-consent-error" class="field-error" hidden></p>
+  </div>
+
+  <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <button type="submit" class="btn btn-primary w-full sm:w-auto" data-submit>
+      <span data-submit-label>{c.submit}</span>
+      <Icon name="arrow" size={20} />
+    </button>
+    <p class="text-sm text-neutral-600">{c.requiredNote}</p>
+  </div>
+
+  <p class="mt-5 text-sm text-neutral-600">{endpoint ? c.endpointNote : c.mailtoNote}</p>
+
+  <div id="form-status" class="mt-6" role="status" aria-live="polite"></div>
+  <template id="msg-success"><Fragment set:html={c.success} /></template>
+  <template id="msg-success-mailto"><Fragment set:html={c.successMailto} /></template>
+  <template id="msg-failure"><Fragment set:html={c.failure} /></template>
+</form>
+
+<style>
+  .hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    inset-inline-start: -10000px;
+  }
+  .quote-form {
+    position: relative;
+  }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('#quote-form');
+
+  if (form) {
+    form.noValidate = true; // we show our own, translated messages
+    const data = form.dataset;
+    const errorBox = form.querySelector<HTMLElement>('#form-errors')!;
+    const status = form.querySelector<HTMLElement>('#form-status')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const submitLabel = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    const fieldError = (id: string) => form.querySelector<HTMLElement>(`#f-${id}-error`);
+
+    const setError = (input: HTMLInputElement | HTMLTextAreaElement, id: string, message: string | null) => {
+      const el = fieldError(id);
+      const describedBy = (input.getAttribute('aria-describedby') ?? '')
+        .split(' ')
+        .filter((x) => x && x !== `f-${id}-error`);
+      if (message) {
+        input.setAttribute('aria-invalid', 'true');
+        describedBy.push(`f-${id}-error`);
+        if (el) {
+          el.textContent = message;
+          el.hidden = false;
+        }
+      } else {
+        input.removeAttribute('aria-invalid');
+        if (el) {
+          el.textContent = '';
+          el.hidden = true;
+        }
+      }
+      if (input.type !== 'radio') {
+        if (describedBy.length) input.setAttribute('aria-describedby', describedBy.join(' '));
+        else input.removeAttribute('aria-describedby');
+      }
+    };
+
+    const validate = (): HTMLElement | null => {
+      let first: HTMLElement | null = null;
+      const flag = (el: HTMLElement) => (first ??= el);
+
+      for (const id of ['name', 'email', 'message']) {
+        const input = form.querySelector<HTMLInputElement | HTMLTextAreaElement>(`#f-${id}`)!;
+        const value = input.value.trim();
+        let msg: string | null = null;
+        if (!value) msg = data.msgRequired!;
+        else if (id === 'email' && !emailPattern.test(value)) msg = data.msgEmail!;
+        setError(input, id, msg);
+        if (msg) flag(input);
+      }
+
+      const radios = [...form.querySelectorAll<HTMLInputElement>('input[name="topic"]')];
+      const topicOk = radios.some((r) => r.checked);
+      radios.forEach((r) => setError(r, 'topic', topicOk ? null : data.msgTopic!));
+      if (!topicOk) flag(radios[0]!);
+
+      const consent = form.querySelector<HTMLInputElement>('#f-consent')!;
+      setError(consent, 'consent', consent.checked ? null : data.msgConsent!);
+      if (!consent.checked) flag(consent);
+
+      return first;
+    };
+
+    const showStatus = (templateId: string) => {
+      const tpl = form.querySelector<HTMLTemplateElement>(`#${templateId}`);
+      status.innerHTML = '';
+      const box = document.createElement('p');
+      box.className = 'rich rounded-[10px] border-2 border-ink bg-neutral-100 p-4 font-semibold';
+      if (tpl) box.append(tpl.content.cloneNode(true));
+      status.append(box);
+    };
+
+    const mailBody = () => {
+      const lines: string[] = [];
+      form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-label]').forEach((el) => {
+        if (el instanceof HTMLInputElement && el.type === 'radio') {
+          if (el.checked) lines.push(`${el.dataset.label}: ${el.dataset.text}`);
+          return;
+        }
+        const value = el.value.trim();
+        if (value) lines.push(el.tagName === 'TEXTAREA' ? `\n${el.dataset.label}:\n${value}` : `${el.dataset.label}: ${value}`);
+      });
+      return lines.join('\n');
+    };
+
+    // Re-validate a field once the visitor corrects it
+    form.addEventListener('input', () => {
+      if (!errorBox.classList.contains('hidden')) {
+        if (!validate()) errorBox.classList.add('hidden');
+      }
+    });
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.innerHTML = '';
+
+      const invalid = validate();
+      if (invalid) {
+        errorBox.classList.remove('hidden');
+        invalid.focus();
+        return;
+      }
+      errorBox.classList.add('hidden');
+
+      // Honeypot filled → silently pretend success
+      const honeypot = form.querySelector<HTMLInputElement>('#f-website');
+      if (honeypot?.value) {
+        form.reset();
+        showStatus('msg-success');
+        return;
+      }
+
+      if (!data.endpoint) {
+        const href = `mailto:${data.email}?subject=${encodeURIComponent(data.subject ?? '')}&body=${encodeURIComponent(mailBody())}`;
+        window.location.href = href;
+        showStatus('msg-success-mailto');
+        return;
+      }
+
+      const label = submitLabel.textContent;
+      submit.disabled = true;
+      submitLabel.textContent = data.msgSending ?? label;
+      try {
+        const body = new FormData(form);
+        body.delete('website');
+        const res = await fetch(data.endpoint, { method: 'POST', body, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        showStatus('msg-success');
+      } catch {
+        showStatus('msg-failure');
+      } finally {
+        submit.disabled = false;
+        submitLabel.textContent = label;
+      }
+    });
+  }
+</script>

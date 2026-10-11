@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 180" width="220" height="180">
+<!-- PLACEHOLDER – NOT THE REAL LOGO. Replace this file with the original of the same name from
+     Storage-Shipping\Vector\SVG\ (see docs/BRAND.md), then run `npm run build`. -->
+<rect x="62" y="2" width="96" height="96" rx="14" fill="#fff" stroke="#FF3131" stroke-width="3" stroke-dasharray="8 6"/>
+<text x="110" y="68" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700" fill="#FF3131">D</text>
+<text x="110" y="140" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#000">D-GROUP</text>
+<text x="110" y="166" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="1.6" fill="#000">STORAGE &amp; SHIPPING</text>
+</svg>

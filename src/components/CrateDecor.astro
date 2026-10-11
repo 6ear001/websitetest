@@ -1,0 +1,26 @@
+---
+/** Decorative stacked "crates" + arrow (echoes the logo concept, not the logo). */
+interface Props {
+  class?: string;
+  tone?: 'dark' | 'red';
+}
+const { class: className, tone = 'dark' } = Astro.props;
+const line = tone === 'red' ? '#000000' : '#3a3a3a';
+const accent = tone === 'red' ? '#000000' : '#FF3131';
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 320 300"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  class:list={['rtl:-scale-x-100', className]}
+>
+  <rect x="40" y="196" width="220" height="92" rx="12" stroke={line} stroke-width="3"></rect>
+  <rect x="62" y="110" width="176" height="76" rx="12" stroke={line} stroke-width="3"></rect>
+  <rect x="86" y="36" width="128" height="64" rx="12" stroke={accent} stroke-width="3"></rect>
+  <path d="M140 196v26M160 110v22M150 36v18" stroke={line} stroke-width="3" stroke-linecap="round"></path>
+  <path d="M232 70c40 0 60 24 60 60" stroke={accent} stroke-width="4" stroke-linecap="round"></path>
+  <path d="M278 122l14 16 14-16" stroke={accent} stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>

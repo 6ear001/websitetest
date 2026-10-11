@@ -1,0 +1,158 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import Todo from '../components/Todo.astro';
+import { company, mapUrl } from '../config/site';
+import { t, type Locale } from '../i18n';
+import { logos, svgSize } from '../lib/brand';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const a = d.about;
+const stacked = svgSize(logos.stackedColor);
+const valueIcons = ['eye', 'doc', 'care'] as const;
+const [mailUser, mailDomain] = company.email.split('@');
+---
+
+<PageHero hero={a.hero} />
+
+<!-- D-Group family -->
+<section class="bg-white py-20 lg:py-28" aria-labelledby="group-title">
+  <div class="container-site grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <SectionHeader id="group-title" eyebrow={a.group.eyebrow} title={a.group.title} />
+      <div class="rich mt-6 space-y-4 text-lg text-neutral-700">
+        {a.group.paragraphs.map((p) => <p set:html={p} />)}
+      </div>
+    </div>
+    <ul class="grid gap-5">
+      <li class="card reveal border-ink p-7 sm:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <span class="rounded-md bg-brand px-2.5 py-1 text-xs font-extrabold uppercase tracking-wider text-ink">
+            {a.group.selfTag}
+          </span>
+          <span class="text-sm font-bold text-neutral-600">{a.group.selfBadge}</span>
+        </div>
+        <img
+          src={logos.stackedColor}
+          width={stacked.width}
+          height={stacked.height}
+          alt={company.name}
+          loading="lazy"
+          class="mt-6 h-32 w-auto"
+        />
+        <p class="mt-4 font-semibold">{a.group.selfText}</p>
+      </li>
+      <li class="card card-hover reveal p-7 sm:p-8">
+        <span class="rounded-md bg-ink px-2.5 py-1 text-xs font-extrabold uppercase tracking-wider text-white">
+          {a.group.sisterTag}
+        </span>
+        <p class="mt-5 text-2xl font-extrabold" dir="ltr">{company.sister.name}</p>
+        <p class="mt-1 text-neutral-700">{a.group.sisterText}</p>
+        <p class="mt-5">
+          <a href={company.sister.url} class="link-arrow">
+            {a.group.sisterLink}
+            <span class="sr-only">{company.sister.name} {d.ui.externalHint}</span>
+            <Icon name="external" size={18} />
+          </a>
+        </p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- Owner -->
+<section class="bg-neutral-100 py-20 lg:py-28" aria-labelledby="owner-title">
+  <div class="container-site grid items-center gap-12 md:grid-cols-[auto_1fr] md:gap-16">
+    <div class="relative mx-auto w-56 sm:w-64" aria-hidden="true">
+      <div class="relative grid aspect-square place-items-center rounded-[22px] bg-ink">
+        <span class="absolute top-0 h-10 w-12 rounded-b-md bg-brand"></span>
+        <span class="text-7xl font-extrabold tracking-tight text-white" lang="de" dir="ltr">{a.owner.monogram}</span>
+      </div>
+      <span class="absolute -bottom-3 start-6 end-6 h-3 rounded-full bg-neutral-300"></span>
+    </div>
+    <div>
+      <p class="eyebrow">{a.owner.eyebrow}</p>
+      <h2 id="owner-title" class="h-section mt-4" dir="ltr">{a.owner.title}</h2>
+      <p class="mt-2 font-semibold text-neutral-700">{a.owner.role}</p>
+      <div class="rich mt-6 max-w-2xl space-y-4 text-lg text-neutral-700">
+        {a.owner.paragraphs.map((p) => <p set:html={p} />)}
+      </div>
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <a href={`tel:${company.phone.href}`} class="btn btn-outline-dark">
+          <Icon name="phone" size={20} />
+          <span dir="ltr">{company.phone.display}</span>
+        </a>
+        <a href={`mailto:${company.email}`} class="btn btn-outline-dark">
+          <Icon name="mail" size={20} />
+          <span dir="ltr" class="min-w-0">{mailUser}@<wbr />{mailDomain}</span>
+        </a>
+      </div>
+      <Todo note="Optional: persönliches Statement und Porträtfoto des Inhabers ergänzen (Monogramm ist ein Platzhalter)." />
+    </div>
+  </div>
+</section>
+
+<!-- Values -->
+<section class="relative overflow-hidden bg-ink py-20 text-white lg:py-28" aria-labelledby="values-title">
+  <div class="bg-dots absolute inset-0" aria-hidden="true"></div>
+  <div class="container-site relative">
+    <SectionHeader id="values-title" tone="dark" eyebrow={a.values.eyebrow} title={a.values.title} />
+    <ul class="mt-12 grid gap-5 md:grid-cols-3">
+      {
+        a.values.items.map((item, i) => (
+          <li class="card-dark reveal p-7">
+            <span class="grid h-12 w-12 place-items-center rounded-[10px] bg-brand text-ink">
+              <Icon name={valueIcons[i] ?? 'check'} size={24} />
+            </span>
+            <h3 class="mt-5 text-xl">{item.title}</h3>
+            <p class="mt-2 text-neutral-300">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- Location -->
+<section class="bg-white py-20 lg:py-28" aria-labelledby="location-title">
+  <div class="container-site grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <SectionHeader id="location-title" eyebrow={a.location.eyebrow} title={a.location.title} intro={a.location.text} />
+      <address class="mt-8 flex items-start gap-4 not-italic">
+        <span class="crate-icon"><Icon name="pin" size={26} /></span>
+        <span class="text-lg leading-relaxed">
+          <strong dir="ltr">{company.name}</strong><br />
+          <span dir="ltr">{company.address.street}</span><br />
+          <span dir="ltr">{company.address.postalCode} {company.address.city}</span><br />
+          {lang === 'ar' ? company.address.countryAr : company.address.country}
+        </span>
+      </address>
+      <p class="mt-6">
+        <a href={mapUrl} class="link-arrow">
+          {d.ui.openMap}
+          <span class="sr-only">{d.ui.externalHint}</span>
+          <Icon name="external" size={18} />
+        </a>
+      </p>
+    </div>
+    <!-- Stylised location graphic (not a map – no third-party map is loaded) -->
+    <div class="relative overflow-hidden rounded-[12px] bg-neutral-100 p-8" aria-hidden="true">
+      <svg viewBox="0 0 400 260" fill="none" class="w-full rtl:-scale-x-100">
+        <path d="M0 70h400M0 150h400M0 220h400M90 0v260M210 0v260M320 0v260" stroke="#e5e5e5" stroke-width="10"></path>
+        <path d="M-10 214 C 80 196 130 150 210 150 S 330 92 410 70" stroke="#d4d4d4" stroke-width="16" stroke-linecap="round"></path>
+        <rect x="160" y="160" width="100" height="70" rx="12" fill="#000"></rect>
+        <rect x="198" y="160" width="24" height="22" fill="#FF3131"></rect>
+        <path d="M210 150c0 0-30-26-30-48a30 30 0 0 1 60 0c0 22-30 48-30 48z" fill="#FF3131"></path>
+        <circle cx="210" cy="102" r="11" fill="#000"></circle>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<CtaBand cta={a.cta} lang={lang} />

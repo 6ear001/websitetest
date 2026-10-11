@@ -1,0 +1,92 @@
+---
+import ContactForm from '../components/ContactForm.astro';
+import Icon from '../components/Icon.astro';
+import PageHero from '../components/PageHero.astro';
+import { company, mapUrl } from '../config/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const c = d.contact;
+const [mailUser, mailDomain] = company.email.split('@');
+---
+
+<PageHero hero={c.hero} />
+
+<section class="bg-white py-16 lg:py-24">
+  <div class="container-site grid gap-12 lg:grid-cols-[1.7fr_1fr] lg:gap-16">
+    <div id="anfrage" class="scroll-mt-28">
+      <h2 class="h-section">{c.formTitle}</h2>
+      <div class="mt-4">
+        <ContactForm lang={lang} />
+      </div>
+    </div>
+
+    <aside class="space-y-6 lg:pt-2" aria-labelledby="direct-title">
+      <div class="rounded-[12px] bg-ink p-7 text-white sm:p-8">
+        <h2 id="direct-title" class="text-2xl">{c.directTitle}</h2>
+        <p class="mt-2 text-neutral-300">{c.directText}</p>
+        <ul class="mt-6 space-y-5">
+          <li class="flex items-start gap-4">
+            <span class="grid h-11 w-11 flex-none place-items-center rounded-[10px] bg-brand text-ink">
+              <Icon name="phone" size={22} />
+            </span>
+            <span>
+              <span class="block text-sm text-neutral-400">{d.ui.phone}</span>
+              <a href={`tel:${company.phone.href}`} class="font-bold no-underline hover:underline" dir="ltr">
+                {company.phone.display}
+              </a>
+            </span>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="grid h-11 w-11 flex-none place-items-center rounded-[10px] bg-brand text-ink">
+              <Icon name="mail" size={22} />
+            </span>
+            <span class="min-w-0">
+              <span class="block text-sm text-neutral-400">{d.ui.email}</span>
+              <a href={`mailto:${company.email}`} class="font-bold no-underline hover:underline" dir="ltr">
+                {mailUser}@<wbr />{mailDomain}
+              </a>
+            </span>
+          </li>
+          <li class="flex items-start gap-4">
+            <span class="grid h-11 w-11 flex-none place-items-center rounded-[10px] bg-brand text-ink">
+              <Icon name="pin" size={22} />
+            </span>
+            <span>
+              <span class="block text-sm text-neutral-400">{d.ui.address}</span>
+              <address class="font-bold not-italic">
+                <span dir="ltr">{company.address.street}</span><br />
+                <span dir="ltr">{company.address.postalCode} {company.address.city}</span>
+              </address>
+              <a href={mapUrl} class="mt-1 inline-flex items-center gap-1.5 text-sm text-neutral-300 underline decoration-brand decoration-2 underline-offset-4 hover:text-white">
+                {d.ui.openMap}
+                <span class="sr-only">{d.ui.externalHint}</span>
+                <Icon name="external" size={14} />
+              </a>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="rounded-[12px] border-2 border-neutral-200 p-7 sm:p-8">
+        <h2 class="text-xl">{c.nextTitle}</h2>
+        <ol class="mt-5 space-y-4">
+          {
+            c.nextSteps.map((step, i) => (
+              <li class="flex items-start gap-3">
+                <span class="grid h-8 w-8 flex-none place-items-center rounded-lg bg-ink text-sm font-extrabold text-white">
+                  {i + 1}
+                </span>
+                <span class="pt-0.5">{step}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </aside>
+  </div>
+</section>

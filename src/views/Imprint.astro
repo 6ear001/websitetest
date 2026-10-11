@@ -1,0 +1,78 @@
+---
+import Todo from '../components/Todo.astro';
+import { company, isTodo, site } from '../config/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const i = d.imprint;
+const country = lang === 'ar' ? company.address.countryAr : company.address.country;
+---
+
+<section class="relative overflow-hidden bg-ink text-white">
+  <div class="bg-dots absolute inset-0" aria-hidden="true"></div>
+  <div class="container-site relative py-14 sm:py-20">
+    <h1 class="h-page">{i.title}</h1>
+  </div>
+</section>
+
+<section class="bg-white py-14 lg:py-20">
+  <div class="container-site legal rich max-w-3xl">
+    {i.translationNote && <p class="mb-8 rounded-[10px] bg-neutral-100 p-4 text-neutral-700" set:html={i.translationNote} />}
+
+    <h2 class="mt-0!">{i.lawRef}</h2>
+    <p>
+      <strong dir="ltr">{company.name}</strong><br />
+      {i.ownerLabel}: <span dir="ltr">{company.owner}</span><br />
+      <span dir="ltr">{company.address.street}</span><br />
+      <span dir="ltr">{company.address.postalCode} {company.address.city}</span><br />
+      {country}
+    </p>
+
+    <h2>{i.contactHeading}</h2>
+    <p>
+      {d.ui.phone}: <a href={`tel:${company.phone.href}`} dir="ltr">{company.phone.display}</a><br />
+      {d.ui.email}: <a href={`mailto:${company.email}`} dir="ltr">{company.email}</a>
+    </p>
+
+    {
+      (!isTodo(company.vatId) || !isTodo(company.taxNumber) || site.showTodoNotices) && (
+        <>
+          <h2>{i.taxHeading}</h2>
+          {isTodo(company.vatId) ? (
+            <Todo note={company.vatId.todo} />
+          ) : (
+            <p>
+              {i.vatLabel}: <span dir="ltr">{company.vatId}</span>
+            </p>
+          )}
+          {isTodo(company.taxNumber) ? (
+            <Todo note={company.taxNumber.todo} />
+          ) : (
+            <p>
+              {i.taxNumberLabel}: <span dir="ltr">{company.taxNumber}</span>
+            </p>
+          )}
+        </>
+      )
+    }
+
+    {
+      isTodo(company.register) ? (
+        <Todo note={company.register.todo} />
+      ) : (
+        <>
+          <h2>{i.registerHeading}</h2>
+          <p dir="ltr">{company.register}</p>
+        </>
+      )
+    }
+
+    <h2>{i.disputeHeading}</h2>
+    <p>{i.disputeText}</p>
+    <Todo note="Impressum vor Veröffentlichung anwaltlich prüfen lassen (Rechtsform, Pflichtangaben, Verbraucherstreitbeilegung)." />
+  </div>
+</section>

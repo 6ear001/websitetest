@@ -1,0 +1,91 @@
+---
+/** Decorative illustrations for the services page (pure SVG, mirrored in RTL). */
+interface Props {
+  kind: 'storage' | 'shipping';
+  class?: string;
+}
+const { kind, class: className } = Astro.props;
+const crate = { fill: '#0d0d0d', stroke: '#fff', 'stroke-width': 3 };
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 480 340"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  class:list={['rtl:-scale-x-100', className]}
+>
+  {
+    kind === 'storage' ? (
+      <g>
+        {/* shelf rack */}
+        <path d="M56 20v300M424 20v300" stroke="#525252" stroke-width="6" stroke-linecap="round" />
+        <path d="M50 116h380M50 216h380M50 316h380" stroke="#fff" stroke-width="5" stroke-linecap="round" />
+        {/* top shelf */}
+        <g class="anim-drop" style="animation-delay:.1s">
+          <rect x="74" y="52" width="96" height="62" rx="10" {...crate} />
+          <rect x="110" y="52" width="24" height="22" fill="#262626" />
+        </g>
+        <g class="anim-drop" style="animation-delay:.2s">
+          <rect x="182" y="62" width="76" height="52" rx="10" fill="#0d0d0d" stroke="#FF3131" stroke-width="3" />
+          <rect x="208" y="62" width="24" height="18" fill="#FF3131" />
+        </g>
+        <g class="anim-drop" style="animation-delay:.3s">
+          <rect x="270" y="44" width="136" height="70" rx="10" {...crate} />
+          <rect x="326" y="44" width="24" height="24" fill="#262626" />
+        </g>
+        {/* middle shelf */}
+        <g class="anim-drop" style="animation-delay:.4s">
+          <rect x="74" y="140" width="140" height="74" rx="10" {...crate} />
+          <rect x="132" y="140" width="24" height="26" fill="#262626" />
+          <rect x="88" y="186" width="44" height="18" rx="4" stroke="#525252" stroke-width="2.5" />
+        </g>
+        <g class="anim-drop" style="animation-delay:.5s">
+          <rect x="226" y="156" width="88" height="58" rx="10" {...crate} />
+          <rect x="258" y="156" width="24" height="20" fill="#262626" />
+        </g>
+        {/* bottom shelf */}
+        <g class="anim-drop" style="animation-delay:.6s">
+          <rect x="74" y="236" width="110" height="78" rx="10" {...crate} />
+          <rect x="117" y="236" width="24" height="26" fill="#262626" />
+        </g>
+        <g class="anim-drop" style="animation-delay:.7s">
+          <rect x="196" y="250" width="210" height="64" rx="10" {...crate} />
+          <rect x="289" y="250" width="24" height="22" fill="#262626" />
+          <rect x="212" y="284" width="56" height="18" rx="4" stroke="#525252" stroke-width="2.5" />
+        </g>
+        <rect x="330" y="160" width="76" height="54" rx="10" stroke="#404040" stroke-width="3" stroke-dasharray="6 8" />
+      </g>
+    ) : (
+      <g>
+        {/* ground */}
+        <path d="M20 300h440" stroke="#333" stroke-width="3" stroke-linecap="round" />
+        {/* outgoing crate */}
+        <g class="anim-drop" style="animation-delay:.1s">
+          <rect x="40" y="168" width="170" height="128" rx="12" {...crate} />
+          <rect x="111" y="168" width="28" height="40" fill="#FF3131" />
+          <rect x="60" y="250" width="60" height="28" rx="5" stroke="#525252" stroke-width="2.5" />
+          <path d="M70 260h40M70 268h24" stroke="#525252" stroke-width="2.5" stroke-linecap="round" />
+        </g>
+        {/* route */}
+        <path
+          d="M222 236 C 300 236 300 112 384 112"
+          stroke="#525252"
+          stroke-width="4"
+          stroke-dasharray="3 12"
+          stroke-linecap="round"
+        />
+        <path class="anim-draw" d="M222 236 C 300 236 300 112 372 112" stroke="#FF3131" stroke-width="10" stroke-linecap="round" pathLength="400" />
+        <path class="anim-fade" d="M366 88 L 400 112 L 366 136 Z" fill="#FF3131" />
+        {/* destination */}
+        <g class="anim-slide">
+          <path d="M424 128c0 0-26-24-26-44a26 26 0 0 1 52 0c0 20-26 44-26 44z" fill="#FF3131" />
+          <circle cx="424" cy="84" r="9" fill="#000" />
+          <rect x="396" y="150" width="56" height="42" rx="8" stroke="#fff" stroke-width="3" />
+          <rect x="414" y="150" width="20" height="14" fill="#262626" />
+        </g>
+      </g>
+    )
+  }
+</svg>

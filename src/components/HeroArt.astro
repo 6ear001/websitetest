@@ -1,0 +1,59 @@
+---
+/**
+ * Home hero illustration: three stacked crates (storage) and an arrow sending
+ * one crate on its way (shipping). Pure SVG, decorative, mirrored in RTL.
+ */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 560 460"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  class:list={['rtl:-scale-x-100', className]}
+>
+  <!-- floor -->
+  <path d="M10 424h540" stroke="#333" stroke-width="3" stroke-linecap="round"></path>
+  <path d="M30 440h120M200 440h60M330 440h180" stroke="#262626" stroke-width="3" stroke-linecap="round"></path>
+
+  <!-- crate stack (bottom → top) -->
+  <g class="anim-drop" style="animation-delay:.1s">
+    <rect x="34" y="292" width="232" height="130" rx="12" fill="#0d0d0d" stroke="#fff" stroke-width="3"></rect>
+    <rect x="134" y="292" width="32" height="46" fill="#262626"></rect>
+    <rect x="56" y="370" width="64" height="30" rx="5" stroke="#525252" stroke-width="2.5"></rect>
+    <path d="M66 381h44M66 390h28" stroke="#525252" stroke-width="2.5" stroke-linecap="round"></path>
+  </g>
+  <g class="anim-drop" style="animation-delay:.3s">
+    <rect x="56" y="176" width="188" height="112" rx="12" fill="#0d0d0d" stroke="#fff" stroke-width="3"></rect>
+    <rect x="134" y="176" width="32" height="40" fill="#262626"></rect>
+    <rect x="76" y="248" width="54" height="24" rx="5" stroke="#525252" stroke-width="2.5"></rect>
+  </g>
+  <g class="anim-drop" style="animation-delay:.5s">
+    <rect x="82" y="82" width="136" height="90" rx="12" fill="#0d0d0d" stroke="#FF3131" stroke-width="3"></rect>
+    <rect x="134" y="82" width="32" height="34" fill="#FF3131"></rect>
+  </g>
+
+  <!-- arrow: storage → shipping -->
+  <path
+    class="anim-draw"
+    d="M282 360 C 360 360 372 236 440 236"
+    stroke="#FF3131"
+    stroke-width="12"
+    stroke-linecap="round"
+    pathLength="400"></path>
+  <path class="anim-fade" d="M430 206 L 470 236 L 430 266 Z" fill="#FF3131"></path>
+
+  <!-- crate on its way -->
+  <g class="anim-slide">
+    <path d="M360 128h40M344 148h56M372 168h28" stroke="#404040" stroke-width="4" stroke-linecap="round"></path>
+    <rect x="414" y="104" width="122" height="88" rx="12" fill="#0d0d0d" stroke="#fff" stroke-width="3"></rect>
+    <rect x="460" y="104" width="30" height="32" fill="#262626"></rect>
+    <path d="M436 168l14 0M436 158h28" stroke="#525252" stroke-width="2.5" stroke-linecap="round"></path>
+  </g>
+
+</svg>

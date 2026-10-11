@@ -1,0 +1,58 @@
+---
+import Todo from '../components/Todo.astro';
+import { isTodo, site } from '../config/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const d = t(lang);
+const p = d.privacy;
+---
+
+<section class="relative overflow-hidden bg-ink text-white">
+  <div class="bg-dots absolute inset-0" aria-hidden="true"></div>
+  <div class="container-site relative py-14 sm:py-20">
+    <h1 class="h-page">{p.title}</h1>
+  </div>
+</section>
+
+<section class="bg-white py-14 lg:py-20">
+  <div class="container-site legal rich max-w-3xl">
+    <Todo note={p.lawyerNote} />
+    {p.translationNote && <p class="my-8 rounded-[10px] bg-neutral-100 p-4 text-neutral-700" set:html={p.translationNote} />}
+
+    {
+      p.sections.map((section) => (
+        <>
+          <h2>{section.heading}</h2>
+          {section.paragraphs.map((para) => (
+            <p set:html={para} />
+          ))}
+          {section.list && (
+            <ul>
+              {section.list.map((item) => (
+                <li set:html={item} />
+              ))}
+            </ul>
+          )}
+          {section.after?.map((para) => (
+            <p set:html={para} />
+          ))}
+          {section.todo && <Todo note={section.todo} />}
+        </>
+      ))
+    }
+
+    {
+      isTodo(site.privacyPolicyDate) ? (
+        <Todo note={`Stand: ${site.privacyPolicyDate.todo}`} />
+      ) : (
+        <p class="mt-12 text-sm text-neutral-600">
+          {p.updatedLabel}: {site.privacyPolicyDate}
+        </p>
+      )
+    }
+  </div>
+</section>

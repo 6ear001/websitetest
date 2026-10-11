@@ -1,0 +1,28 @@
+---
+import { site } from '../config/site';
+
+/** Visible pre-launch TODO marker. Hidden when site.showTodoNotices is false. */
+interface Props {
+  note: string;
+  inline?: boolean;
+}
+const { note, inline = false } = Astro.props;
+const arabic = /[\u0600-\u06FF]/.test(note);
+const lang = arabic ? 'ar' : 'de';
+const dir = arabic ? 'rtl' : 'ltr';
+---
+
+{
+  site.showTodoNotices &&
+    (inline ? (
+      <span class="todo my-0 inline-flex" lang={lang} dir={dir}>
+        <span class="todo-badge">TODO</span>
+        <span>{note}</span>
+      </span>
+    ) : (
+      <p class="todo" lang={lang} dir={dir}>
+        <span class="todo-badge">TODO</span>
+        <span>{note}</span>
+      </p>
+    ))
+}
